@@ -1,0 +1,19 @@
+[project]
+name = "pybiztools"
+version = "0.1.0"
+description = "Shared business tools for database, email, logging, Google Drive, and Slack integrations"
+readme = "README.md"
+authors = [
+    { name = "Felipe Zuniga Carlier", email = "felipec@trackonomysystems.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "aioodbc>=0.5.0",
+    "azure-communication-email>=1.0.0",
+    "aiogoogle>=5.11.0",
+    "aiohttp>=3.9.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.3,<0.9.0"]
+build-backend = "uv_build"

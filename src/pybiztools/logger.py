@@ -58,6 +58,4 @@ def setup_logger(
     return logger
 
 
-logger: logging.Logger = setup_logger(
-    "pybiztools", log_level=get_log_level_from_env()
-)
+logger: logging.Logger = setup_logger("pybiztools", log_level=get_log_level_from_env())

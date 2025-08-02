@@ -6,7 +6,7 @@ from .slack import SlackService
 
 __all__ = [
     "DatabaseConnection",
-    "EmailService", 
+    "EmailService",
     "GoogleDrive",
     "logger",
     "setup_logger",

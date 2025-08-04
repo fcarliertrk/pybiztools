@@ -1,6 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
-from aiohttp import ClientSession, ClientResponse
+from unittest.mock import AsyncMock, patch
 from pybiztools.slack import SlackService
 
 

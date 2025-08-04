@@ -1,40 +1,50 @@
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
-from pybiztools.db import DatabaseConnection
+from pybiztools.db import DatabaseConnection, DatabaseConnectionConfig
 
 
 class TestDatabaseConnection:
 
     @pytest.fixture
     def db_connection(self):
-        return DatabaseConnection()
+        config = DatabaseConnectionConfig(
+            driver="ODBC Driver 18 for SQL Server",
+            server="test_server",
+            database="test_database",
+            db_user="test_user",
+            db_pass="test_pass"
+        )
+        return DatabaseConnection(config)
 
     def test_init(self, db_connection):
         assert db_connection.pool is None
-        assert "Driver={ODBC Driver 18 for SQL Server}" in db_connection.conn_str
+        assert "Driver=ODBC Driver 18 for SQL Server" in db_connection.conn_str
+        assert "Server=test_server" in db_connection.conn_str
+        assert "Database=test_database" in db_connection.conn_str
+        assert "UID=test_user" in db_connection.conn_str
+        assert "PWD=test_pass" in db_connection.conn_str
 
-    @patch.dict(
-        "os.environ",
-        {
-            "DB_HOST": "test_host",
-            "DB_NAME": "test_db",
-            "DB_USER": "test_user",
-            "DB_PASS": "test_pass",
-        },
-    )
-    def test_connection_string_from_env(self):
-        db = DatabaseConnection()
-        assert "Server=test_host" in db.conn_str
-        assert "Database=test_db" in db.conn_str
-        assert "UID=test_user" in db.conn_str
-        assert "PWD=test_pass" in db.conn_str
+    def test_database_connection_config_creation(self):
+        config = DatabaseConnectionConfig(
+            driver="ODBC Driver 18 for SQL Server",
+            server="localhost",
+            database="testdb",
+            db_user="user",
+            db_pass="pass"
+        )
+        assert config.driver == "ODBC Driver 18 for SQL Server"
+        assert config.server == "localhost"
+        assert config.database == "testdb"
+        assert config.db_user == "user"
+        assert config.db_pass == "pass"
+
 
     @pytest.mark.asyncio
     @patch("pybiztools.db.aioodbc")
     async def test_connect_creates_pool(self, mock_aioodbc, db_connection):
         mock_pool = AsyncMock()
-        mock_aioodbc.create_pool.return_value = mock_pool
+        mock_aioodbc.create_pool = AsyncMock(return_value=mock_pool)
 
         result = await db_connection.connect()
 
@@ -62,10 +72,17 @@ class TestDatabaseConnection:
         mock_conn = AsyncMock()
         mock_cursor = AsyncMock()
 
-        mock_pool.acquire.return_value.__aenter__.return_value = mock_conn
-        mock_conn.cursor.return_value.__aenter__.return_value = mock_cursor
+        mock_acquire_context = AsyncMock()
+        mock_acquire_context.__aenter__ = AsyncMock(return_value=mock_conn)
+        mock_acquire_context.__aexit__ = AsyncMock(return_value=None)
+        mock_pool.acquire = MagicMock(return_value=mock_acquire_context)
+        mock_cursor_context = AsyncMock()
+        mock_cursor_context.__aenter__ = AsyncMock(return_value=mock_cursor)
+        mock_cursor_context.__aexit__ = AsyncMock(return_value=None)
+        mock_conn.cursor = MagicMock(return_value=mock_cursor_context)
         mock_cursor.description = [("id",), ("name",)]
-        mock_cursor.fetchall.return_value = [(1, "John"), (2, "Jane")]
+        mock_cursor.fetchall = AsyncMock(return_value=[(1, "John"), (2, "Jane")])
+        mock_cursor.execute = AsyncMock()
 
         db_connection.pool = mock_pool
 
@@ -82,10 +99,17 @@ class TestDatabaseConnection:
         mock_conn = AsyncMock()
         mock_cursor = AsyncMock()
 
-        mock_pool.acquire.return_value.__aenter__.return_value = mock_conn
-        mock_conn.cursor.return_value.__aenter__.return_value = mock_cursor
+        mock_acquire_context = AsyncMock()
+        mock_acquire_context.__aenter__ = AsyncMock(return_value=mock_conn)
+        mock_acquire_context.__aexit__ = AsyncMock(return_value=None)
+        mock_pool.acquire = MagicMock(return_value=mock_acquire_context)
+        mock_cursor_context = AsyncMock()
+        mock_cursor_context.__aenter__ = AsyncMock(return_value=mock_cursor)
+        mock_cursor_context.__aexit__ = AsyncMock(return_value=None)
+        mock_conn.cursor = MagicMock(return_value=mock_cursor_context)
         mock_cursor.description = [("id",), ("name",)]
-        mock_cursor.fetchall.return_value = [(1, "John"), (2, "Jane")]
+        mock_cursor.fetchall = AsyncMock(return_value=[(1, "John"), (2, "Jane")])
+        mock_cursor.execute = AsyncMock()
 
         db_connection.pool = mock_pool
 
@@ -101,10 +125,17 @@ class TestDatabaseConnection:
         mock_conn = AsyncMock()
         mock_cursor = AsyncMock()
 
-        mock_pool.acquire.return_value.__aenter__.return_value = mock_conn
-        mock_conn.cursor.return_value.__aenter__.return_value = mock_cursor
+        mock_acquire_context = AsyncMock()
+        mock_acquire_context.__aenter__ = AsyncMock(return_value=mock_conn)
+        mock_acquire_context.__aexit__ = AsyncMock(return_value=None)
+        mock_pool.acquire = MagicMock(return_value=mock_acquire_context)
+        mock_cursor_context = AsyncMock()
+        mock_cursor_context.__aenter__ = AsyncMock(return_value=mock_cursor)
+        mock_cursor_context.__aexit__ = AsyncMock(return_value=None)
+        mock_conn.cursor = MagicMock(return_value=mock_cursor_context)
         mock_cursor.description = None
         mock_cursor.rowcount = 1
+        mock_cursor.execute = AsyncMock()
 
         db_connection.pool = mock_pool
 
@@ -126,10 +157,17 @@ class TestDatabaseConnection:
         mock_conn = AsyncMock()
         mock_cursor = AsyncMock()
 
-        mock_pool.acquire.return_value.__aenter__.return_value = mock_conn
-        mock_conn.cursor.return_value.__aenter__.return_value = mock_cursor
+        mock_acquire_context = AsyncMock()
+        mock_acquire_context.__aenter__ = AsyncMock(return_value=mock_conn)
+        mock_acquire_context.__aexit__ = AsyncMock(return_value=None)
+        mock_pool.acquire = MagicMock(return_value=mock_acquire_context)
+        mock_cursor_context = AsyncMock()
+        mock_cursor_context.__aenter__ = AsyncMock(return_value=mock_cursor)
+        mock_cursor_context.__aexit__ = AsyncMock(return_value=None)
+        mock_conn.cursor = MagicMock(return_value=mock_cursor_context)
         mock_cursor.description = None
         mock_cursor.rowcount = 3
+        mock_cursor.execute = AsyncMock()
 
         db_connection.pool = mock_pool
 
@@ -138,7 +176,7 @@ class TestDatabaseConnection:
         assert result == 3
 
     @pytest.mark.asyncio
-    @patch("pybiztools.db.logger")
+    @patch("pybiztools.logger.logger")
     async def test_execute_query_handles_exception(self, mock_logger, db_connection):
         db_connection.pool = None
 
@@ -150,6 +188,8 @@ class TestDatabaseConnection:
     @pytest.mark.asyncio
     async def test_close_with_pool(self, db_connection):
         mock_pool = AsyncMock()
+        mock_pool.close = MagicMock()
+        mock_pool.wait_closed = AsyncMock()
         db_connection.pool = mock_pool
 
         await db_connection.close()
@@ -170,7 +210,9 @@ class TestDatabaseConnection:
     @patch("pybiztools.db.aioodbc")
     async def test_context_manager(self, mock_aioodbc, db_connection):
         mock_pool = AsyncMock()
-        mock_aioodbc.create_pool.return_value = mock_pool
+        mock_pool.close = MagicMock()
+        mock_pool.wait_closed = AsyncMock()
+        mock_aioodbc.create_pool = AsyncMock(return_value=mock_pool)
 
         async with db_connection as db:
             assert db == db_connection

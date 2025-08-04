@@ -86,6 +86,7 @@ uv add pybiztools
 ```python
 from pybiztools import (
     DatabaseConnection,
+    DatabaseConnectionConfig,
     EmailService,
     GoogleDrive,
     SlackService,
@@ -97,10 +98,19 @@ from pybiztools import (
 ### Database Example
 ```python
 import asyncio
-from pybiztools import DatabaseConnection
+from pybiztools import DatabaseConnection, DatabaseConnectionConfig
 
 async def main():
-    async with DatabaseConnection() as db:
+    # Create database configuration
+    db_config = DatabaseConnectionConfig(
+        driver="ODBC Driver 18 for SQL Server",
+        server="your_server.database.windows.net",
+        database="your_database",
+        db_user="your_username",
+        db_pass="your_password"
+    )
+    
+    async with DatabaseConnection(db_config) as db:
         # Execute query with results as dictionaries
         results = await db.execute_query(
             "SELECT * FROM users WHERE active = ?", 
@@ -218,10 +228,19 @@ custom_logger.debug("Custom debug message")
 The package uses several environment variables for configuration:
 
 #### Database (DatabaseConnection)
-- `DB_HOST`: SQL Server hostname
-- `DB_NAME`: Database name
-- `DB_USER`: Database username
-- `DB_PASS`: Database password
+The DatabaseConnection class now uses a configuration object instead of environment variables:
+
+```python
+from pybiztools import DatabaseConnectionConfig
+
+config = DatabaseConnectionConfig(
+    driver="ODBC Driver 18 for SQL Server",  # or your preferred ODBC driver
+    server="your_server.database.windows.net",
+    database="your_database_name",
+    db_user="your_username",
+    db_pass="your_password"
+)
+```
 
 #### Google Drive (GoogleDrive)
 - `SERVICE_ACCOUNT_FILE`: Path to Google service account JSON file
@@ -251,11 +270,20 @@ This creates:
 
 ### Testing
 
-The package includes basic tests in the `tests/` directory:
+The package includes comprehensive tests in the `src/pybiztools/tests/` directory:
 
 ```bash
-# Run tests (if test framework is configured)
-python -m pytest tests/
+# Install test dependencies
+uv sync --extra test
+
+# Run tests using uv
+uv run pytest src/pybiztools/tests/
+
+# Run tests with verbose output
+uv run pytest src/pybiztools/tests/ -v
+
+# Run specific test file
+uv run pytest src/pybiztools/tests/test_db.py
 ```
 
 ## Contributing

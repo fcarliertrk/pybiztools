@@ -1,17 +1,27 @@
-import os
-import aioodbc
+from dataclasses import dataclass
 from typing import Optional, List, Tuple, Any, Union, Dict
+
+import aioodbc
+
+
+@dataclass
+class DatabaseConnectionConfig:
+    driver: str
+    server: str
+    database: str
+    db_user: str
+    db_pass: str
 
 
 class DatabaseConnection:
-    def __init__(self) -> None:
+    def __init__(self, config: DatabaseConnectionConfig) -> None:
         self.pool: Optional[aioodbc.Pool] = None
         self.conn_str: str = (
-            f"Driver={{ODBC Driver 18 for SQL Server}};"
-            f"Server={os.getenv('DB_HOST')};"
-            f"Database={os.getenv('DB_NAME')};"
-            f"UID={os.getenv('DB_USER')};"
-            f"PWD={os.getenv('DB_PASS')};"
+            f"Driver={config.driver};"
+            f"Server={config.server};"
+            f"Database={config.database};"
+            f"UID={config.db_user};"
+            f"PWD={config.db_pass};"
         )
 
     async def connect(self) -> aioodbc.Pool:

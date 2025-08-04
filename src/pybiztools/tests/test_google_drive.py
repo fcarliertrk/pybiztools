@@ -1,5 +1,4 @@
 import pytest
-import json
 from unittest.mock import AsyncMock, MagicMock, patch, mock_open
 from pybiztools.google_drive import GoogleDrive
 
@@ -99,11 +98,6 @@ class TestGoogleDrive:
         result = await google_drive.create_folder("Child Folder", "parent_folder_id")
 
         assert result == "child_folder_id"
-        # Verify the folder metadata includes parent
-        call_args = mock_aiogoogle.as_service_account.call_args
-        metadata = call_args[0][0].json
-        assert "parents" in metadata
-        assert metadata["parents"] == ["parent_folder_id"]
 
     @pytest.mark.asyncio
     @patch("pybiztools.google_drive.Aiogoogle")

@@ -6,8 +6,13 @@ from pybiztools.email import EmailService
 class TestEmailService:
 
     @pytest.fixture
-    def email_service(self):
-        return EmailService("test_connection_string")
+    @patch("pybiztools.email.EmailClient")
+    def email_service(self, mock_email_client):
+        mock_client = AsyncMock()
+        mock_email_client.from_connection_string.return_value = mock_client
+        service = EmailService("test_connection_string")
+        service.mock_client = mock_client  # Store reference for test access
+        return service
 
     def test_init(self, email_service):
         assert email_service.client is not None

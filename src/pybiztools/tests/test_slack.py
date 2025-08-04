@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 from pybiztools.slack import SlackService
 
 
@@ -51,7 +51,10 @@ class TestSlackService:
         }
 
         mock_session = AsyncMock()
-        mock_session.post.return_value.__aenter__.return_value = mock_response
+        mock_post_context = AsyncMock()
+        mock_post_context.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_post_context.__aexit__ = AsyncMock(return_value=None)
+        mock_session.post = MagicMock(return_value=mock_post_context)
         slack_service.session = mock_session
         slack_service.api_base_url = "https://slack.com/api"
 
@@ -78,6 +81,7 @@ class TestSlackService:
             headers=expected_headers,
             json=message,
         )
+        print(result)
         assert result == {"ok": True, "message": {"ts": "1234567890.123"}}
 
     @pytest.mark.asyncio
@@ -88,7 +92,10 @@ class TestSlackService:
         mock_response.text.return_value = "Bad Request: channel_not_found"
 
         mock_session = AsyncMock()
-        mock_session.post.return_value.__aenter__.return_value = mock_response
+        mock_post_context = AsyncMock()
+        mock_post_context.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_post_context.__aexit__ = AsyncMock(return_value=None)
+        mock_session.post = MagicMock(return_value=mock_post_context)
         slack_service.session = mock_session
         slack_service.api_base_url = "https://slack.com/api"
 
@@ -105,7 +112,9 @@ class TestSlackService:
     @patch("pybiztools.slack.logger")
     async def test_send_message_exception(self, mock_logger, slack_service):
         mock_session = AsyncMock()
-        mock_session.post.side_effect = Exception("Network error")
+        mock_post_context = AsyncMock()
+        mock_post_context.__aenter__.side_effect = Exception("Network error")
+        mock_session.post = MagicMock(return_value=mock_post_context)
         slack_service.session = mock_session
 
         message = {"channel": "#general", "text": "Test"}
@@ -125,7 +134,10 @@ class TestSlackService:
 
         with patch("pybiztools.slack.ClientSession") as mock_session_class:
             mock_session = AsyncMock()
-            mock_session.post.return_value.__aenter__.return_value = mock_response
+            mock_post_context = AsyncMock()
+            mock_post_context.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_post_context.__aexit__ = AsyncMock(return_value=None)
+            mock_session.post = MagicMock(return_value=mock_post_context)
             mock_session_class.return_value = mock_session
 
             slack_service.api_base_url = "https://slack.com/api"
@@ -194,7 +206,10 @@ class TestSlackService:
         }
 
         mock_session = AsyncMock()
-        mock_session.post.return_value.__aenter__.return_value = mock_response
+        mock_post_context = AsyncMock()
+        mock_post_context.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_post_context.__aexit__ = AsyncMock(return_value=None)
+        mock_session.post = MagicMock(return_value=mock_post_context)
         slack_service.session = mock_session
         slack_service.api_base_url = "https://slack.com/api"
 

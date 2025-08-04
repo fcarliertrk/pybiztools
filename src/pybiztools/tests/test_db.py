@@ -177,8 +177,9 @@ class TestDatabaseConnection:
 
     @pytest.mark.asyncio
     @patch("pybiztools.logger.logger")
-    async def test_execute_query_handles_exception(self, mock_logger, db_connection):
-        db_connection.pool = None
+    @patch.object(DatabaseConnection, 'connect')
+    async def test_execute_query_handles_exception(self, mock_connect, mock_logger, db_connection):
+        mock_connect.side_effect = Exception("Connection failed")
 
         with pytest.raises(Exception):
             await db_connection.execute_query("SELECT * FROM users")

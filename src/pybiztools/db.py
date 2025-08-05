@@ -22,6 +22,7 @@ class DatabaseConnection:
             f"Database={config.database};"
             f"UID={config.db_user};"
             f"PWD={config.db_pass};"
+            "TrustServerCertificate=yes;"
         )
 
     async def connect(self) -> aioodbc.Pool:

@@ -56,6 +56,3 @@ def setup_logger(
         logger.addHandler(file_handler)
 
     return logger
-
-
-logger: logging.Logger = setup_logger("pybiztools", log_level=get_log_level_from_env())

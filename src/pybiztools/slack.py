@@ -3,7 +3,9 @@ from typing import Optional, Any
 
 from aiohttp import ClientSession
 
-from .logger import logger
+from .logger import setup_logger
+
+logger = setup_logger('pybiztools.slack')
 
 
 class SlackService:

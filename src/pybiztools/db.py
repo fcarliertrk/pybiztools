@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from typing import Optional, List, Tuple, Any, Union, Dict
 
 import aioodbc
+from .logger import setup_logger
+
+logger = setup_logger('pybiztools.db')
 
 
 @dataclass
@@ -75,7 +78,6 @@ class DatabaseConnection:
                         # For non-query statements (UPDATE, INSERT, DELETE), return row count
                         return cur.rowcount
         except Exception as err:
-            from .logger import logger
 
             logger.error(f"Error while executing query: {err}")
             raise

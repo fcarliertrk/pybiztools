@@ -5,7 +5,7 @@ from aiohttp import ClientSession
 
 from .logger import setup_logger
 
-logger = setup_logger('pybiztools.slack')
+logger = setup_logger('pybiztools')
 
 
 class SlackService:

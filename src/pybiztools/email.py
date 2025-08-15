@@ -2,7 +2,7 @@ from typing import Optional, Any
 from azure.communication.email.aio import EmailClient
 from .logger import setup_logger
 
-logger = setup_logger('pybiztools.email')
+logger = setup_logger('pybiztools')
 
 
 class EmailService:

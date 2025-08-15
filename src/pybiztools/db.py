@@ -4,7 +4,7 @@ from typing import Optional, List, Tuple, Any, Union, Dict
 import aioodbc
 from .logger import setup_logger
 
-logger = setup_logger('pybiztools.db')
+logger = setup_logger('pybiztools')
 
 
 @dataclass
@@ -79,7 +79,7 @@ class DatabaseConnection:
                         return cur.rowcount
         except Exception as err:
 
-            logger.error(f"Error while executing query: {err}")
+            logger.error("Error while executing query: %s", err)
             raise
 
     async def close(self) -> None:

@@ -6,7 +6,7 @@ from aiogoogle.auth.creds import ServiceAccountCreds
 
 from .logger import setup_logger
 
-logger = setup_logger('pybiztools.google_drive')
+logger = setup_logger('pybiztools')
 
 # Define the auth scopes
 SCOPES = ["https://www.googleapis.com/auth/drive"]

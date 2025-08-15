@@ -1,0 +1,43 @@
+[MAIN]
+load-plugins=
+
+[MESSAGES CONTROL]
+disable=missing-module-docstring,
+        missing-class-docstring,
+        missing-function-docstring,
+        too-few-public-methods,
+        too-many-arguments,
+        too-many-locals,
+        too-many-branches,
+        too-many-statements,
+        line-too-long
+
+[FORMAT]
+max-line-length=88
+good-names=i,j,k,ex,Run,_,db,id
+
+[DESIGN]
+max-args=10
+max-locals=15
+max-returns=6
+max-branches=12
+max-statements=50
+
+[SIMILARITIES]
+min-similarity-lines=4
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=no
+
+[BASIC]
+good-names-rgxs=^[_a-z][_a-z0-9]*$
+
+[REFACTORING]
+max-nested-blocks=5
+
+[IMPORTS]
+known-third-party=aioodbc,azure,aiogoogle,aiohttp,pytest
+
+[TYPECHECK]
+generated-members=logging.handlers.RotatingFileHandler
+extension-pkg-allow-list=logging.handlers
